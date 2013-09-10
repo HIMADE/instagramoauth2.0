@@ -13,7 +13,7 @@ var clientSecret;
 var redirectUri;
 var responseType = 'code';
 var accessType = 'offline';
-var scope = ""; //https://developers.google.com/accounts/docs/OAuth2Login
+var scope = "likes"; //https://developers.google.com/accounts/docs/OAuth2Login
 var state;
 var devKey;
 
