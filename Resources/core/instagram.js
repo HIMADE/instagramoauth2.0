@@ -328,17 +328,17 @@ function authorizeUICallback(e) {
 	if (e.url.indexOf('http://localhost/#') === 0) {
 		Ti.API.info(e.url);
 		var token = e.url.split("=")[1];
-		Ti.API.info("Token = "+token);
+		Ti.API.info("/////Instagram.js Line 331 - Token = "+token);
 		Ti.App.fireEvent('tokenReceived',{'token': token});
 		tokenReturned = true;
-		Ti.API.info('Temp Token: ' + token);
+		Ti.API.info('/////Instagram.js Line 334 - Temp Token: ' + token);
 	} else if (e.url.indexOf('approval') !== -1) {
 		Ti.API.info(e.url);
 		//Extract code from title
 		var title = webView.evalJS("document.title");
 		var token = title.split("=")[1];
 		tokenReturned = true;
-		Ti.API.info('Temp Token: ' + token);
+		Ti.API.info('/////Instagram.js Line 341 - Temp Token: ' + token);
 	} else if (e.url.indexOf('https://accounts.instagram.com/Logout') === 0) {
 		Ti.App.fireEvent('app:instagram_logout', {});
 		destroyAuthorizeUI();
@@ -348,7 +348,9 @@ function authorizeUICallback(e) {
 	}
 	
 	if (tokenReturned){
+		Ti.API.info("/////Instagram.js Line 351 - tokenReturned = True");
 		if (token === "access_denied"){
+			Ti.API.info("/////Instagram.js Line 353 - token === access_denied");
 			Ti.App.fireEvent('app:instagram_access_denied', {});
 			status = false;
 			Ti.App.Properties.setString("GG_ACCESS_TOKEN", null);
