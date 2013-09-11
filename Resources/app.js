@@ -10,8 +10,8 @@ win.open();
  
 // Google params
 var ggParams = {
-    clientId: ' 470b822ca5a7475ea07f907003cfda0d',
-    clientSecret: ' 3808a4af22cd4548b363a690a080f690',
+    clientId: ' ',
+    clientSecret: ' ',
     redirectUri: 'http://localhost',
     devKey: '',
 }
@@ -40,9 +40,21 @@ google.login(function(e){
 var newWindow = Ti.UI.createWindow({
 		backgroundColor: 'purple',
 		width: '100%',
-		height: '100%',
-		layout:'horizontal'
+		height: '100%'
 	});
+	
+var scrollView = Ti.UI.createScrollView({
+  contentWidth: Ti.Platform.displayCaps.platformWidth,
+  contentHeight: Ti.UI.SIZE,
+  showVerticalScrollIndicator: true,
+  showHorizontalScrollIndicator: true,
+  backgroundColor:'white',
+  height: '100%',
+  width: '100%',
+  layout: "horizontal"
+});
+
+newWindow.add(scrollView);
 
 Ti.App.addEventListener('tokenReceived',function(e){
 	
@@ -51,7 +63,9 @@ Ti.App.addEventListener('tokenReceived',function(e){
 		var self = Ti.UI.createImageView({
 			image: image,
 			height: '100dp',
-			width: '100dp'
+			width: '100dp',
+			top: '5dp',
+			left: '5dp'
 		});
 		
 		return self;
@@ -66,7 +80,7 @@ Ti.App.addEventListener('tokenReceived',function(e){
 	         
 	         for(i=0; i< data.data.length; i++){
 	         	var view = new createView(data.data[i].images.thumbnail.url);
-	         	newWindow.add(view);
+	         	scrollView.add(view);
 	         };
 	         
 	     },

@@ -206,7 +206,7 @@ function showAuthorizeUI(pUrl) {
 	
 	window = Ti.UI.createWindow({
 		modal : true,
-		fullscreen : true,
+		fullscreen : false,
 		width : '100%'
 	});
 	closeLabel = Ti.UI.createLabel({
