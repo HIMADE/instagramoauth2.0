@@ -8,13 +8,14 @@ var win = Ti.UI.createWindow({
 });
 win.open();
  
+ Ti.include("secret.js");
 // Google params
 var ggParams = {
-    clientId: ' ',
-    clientSecret: ' ',
+    clientId: clientid,
+    clientSecret: clientsecret,
     redirectUri: 'http://localhost',
-    devKey: '',
-}
+    devKey: ''
+};
  
 // Initialize Google Service
 var google = new Google(ggParams);
