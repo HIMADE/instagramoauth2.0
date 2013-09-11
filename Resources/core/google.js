@@ -11,7 +11,7 @@
 var clientId;
 var clientSecret;
 var redirectUri;
-var responseType = 'code';
+var responseType = 'token';
 var accessType = 'offline';
 var scope = "likes"; //https://developers.google.com/accounts/docs/OAuth2Login
 var state;
@@ -20,7 +20,7 @@ var devKey;
 var ACCESS_TOKEN = null;
 var REFRESH_TOKEN = null;
 var xhr = null;
-var OAUTH_URL = 'https://instagram.com/oauth/authorize/?client_id=470b822ca5a7475ea07f907003cfda0d&response_type=token';
+var OAUTH_URL = 'https://instagram.com/oauth/authorize/?client_id=470b822ca5a7475ea07f907003cfda0d&response_type=';
 var API_URL = 'https://api.instagram.com/v1/';
 var success_callback = null;
 var window = null;
@@ -147,14 +147,17 @@ GoogleService.prototype.callMethod = function(args, callback, getToken) {
 				paramsString += '&' + Titanium.Network.encodeURIComponent(a) + '=' + Titanium.Network.encodeURIComponent(params[a]);
 			}
 			var url = API_URL + call + "?access_token=" + ACCESS_TOKEN + '&alt=json&v=2&key='+devKey+paramsString;
-			Ti.API.info(url);
+			Ti.API.info('getting' + url);
 			xhr.open("GET", url);
 		} 
 		else if(method === "POST") {
+			Ti.API.info("Executing Post");
 			if (getToken){
-				xhr.open("POST", OAUTH_URL + call);
+				Ti.API.info("Calling: " + OAUTH_URL + call + "&redirect_uri="+ redirectUri);
+				xhr.open("POST", OAUTH_URL + call + "&redirect_uri="+ redirectUri);
 			}
 			else{
+				Ti.API.info(API_URL + call + "?alt=json&v=2&access_token=" + ACCESS_TOKEN+'&key='+devKey);
 				xhr.open("POST", API_URL + call + "?alt=json&v=2&access_token=" + ACCESS_TOKEN+'&key='+devKey);
 			}
 		}
@@ -200,6 +203,7 @@ GoogleService.prototype.callMethod = function(args, callback, getToken) {
  */
 
 function showAuthorizeUI(pUrl) {
+	
 	window = Ti.UI.createWindow({
 		modal : true,
 		fullscreen : true,
@@ -225,7 +229,7 @@ function showAuthorizeUI(pUrl) {
 	});
 	webView.addEventListener('beforeload', function(e) {
 		Ti.API.info('Preload: '+e.url+' : ' +e.url.indexOf(redirectUri));
-		if (e.url.indexOf('http://localhost/?') === 0) {
+		if (e.url.indexOf('http://localhost/#') === 0) {
 			webView.stopLoading();
 			authorizeUICallback(e);
 		}
@@ -235,6 +239,7 @@ function showAuthorizeUI(pUrl) {
 	});
 	
 	webView.addEventListener('load', function(e){
+		Ti.API.info(ACCESS_TOKEN);
 		Ti.API.info('Load: '+e.url+' : ' +e.url.indexOf(redirectUri));
 		if (e.url.indexOf('approval') !== -1) {
 			authorizeUICallback(e);
@@ -318,9 +323,11 @@ function authorizeUICallback(e) {
 	var status;
 	var tokenReturned = false;
 	
-	if (e.url.indexOf('http://localhost/?') === 0) {
+	if (e.url.indexOf('http://localhost/#') === 0) {
 		Ti.API.info(e.url);
 		var token = e.url.split("=")[1];
+		Ti.API.info("Token = "+token);
+		Ti.App.fireEvent('tokenReceived',{'token': token});
 		tokenReturned = true;
 		Ti.API.info('Temp Token: ' + token);
 	} else if (e.url.indexOf('approval') !== -1) {
@@ -337,7 +344,7 @@ function authorizeUICallback(e) {
 		Ti.App.Properties.setString("GG_REFRESH_TOKEN", null);
 		success_callback(false);
 	}
-
+	
 	if (tokenReturned){
 		if (token === "access_denied"){
 			Ti.App.fireEvent('app:google_access_denied', {});
@@ -347,8 +354,8 @@ function authorizeUICallback(e) {
 			if(success_callback != undefined) {
 				success_callback(status);
 			}
-		}
-		else {
+		}else {
+			
 			getTokens(token, function(e){
 				var res = JSON.parse(e);
 				Ti.API.debug(res);
@@ -366,10 +373,10 @@ function authorizeUICallback(e) {
 				if(success_callback != undefined) {
 					success_callback(status);
 				}
-			});		
+			});	
 		}
 		
-		destroyAuthorizeUI();
+		//destroyAuthorizeUI();
 	}
 };
 
