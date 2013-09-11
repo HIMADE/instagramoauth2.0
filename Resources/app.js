@@ -1,4 +1,4 @@
-var Google = require('core/google').GoogleService;  //Make sure path is correct
+var Instagram = require('core/instagram').InstagramService;  //Make sure path is correct
  
 var win = Ti.UI.createWindow({
     fullscreen: true,
@@ -9,7 +9,7 @@ var win = Ti.UI.createWindow({
 win.open();
  
  Ti.include("secret.js");
-// Google params
+// Instagram params
 var ggParams = {
     clientId: clientid,
     clientSecret: clientsecret,
@@ -17,13 +17,13 @@ var ggParams = {
     devKey: ''
 };
  
-// Initialize Google Service
-var google = new Google(ggParams);
+// Initialize Instagram Service
+var instagram = new Instagram(ggParams);
  
-google.login(function(e){
-    Ti.API.info('Token: ' + google.accessToken());
+instagram.login(function(e){
+    Ti.API.info('App.js Token: ' + instagram.accessToken());
  
-    google.refreshToken(function(e){
+    instagram.refreshToken(function(e){
         Ti.API.info('New Token: ' + e.token);
     });
  
@@ -33,7 +33,7 @@ google.login(function(e){
         method: 'GET'
     };
  
-    google.callMethod(params, function(e) {
+    instagram.callMethod(params, function(e) {
         Ti.API.info(e);
     }, null);
 });

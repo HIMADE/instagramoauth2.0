@@ -1,11 +1,11 @@
 /*
- *GoogleService
+ *InstagramService
  * 
- * CommonJS module for Google
+ * CommonJS module for Instagram
  * Uses OAuth2 for authentication/authorization
  * 
- * Ayorinde Adesugba
- * SISC
+ * Wayne grimes Hirakawa based off of Google.js by Ayorinde Adesugba
+ * HIMADE.ORG
  */
 
 var clientId;
@@ -13,19 +13,19 @@ var clientSecret;
 var redirectUri;
 var responseType = 'token';
 var accessType = 'offline';
-var scope = "likes"; //https://developers.google.com/accounts/docs/OAuth2Login
+var scope = "likes"; 
 var state;
 var devKey;
 
 var ACCESS_TOKEN = null;
 var REFRESH_TOKEN = null;
 var xhr = null;
-var OAUTH_URL = 'https://instagram.com/oauth/authorize/?client_id=470b822ca5a7475ea07f907003cfda0d&response_type=';
+var OAUTH_URL = 'https://instagram.com/oauth/authorize/';
 var API_URL = 'https://api.instagram.com/v1/';
 var success_callback = null;
 var window = null;
 
-var inSimulator = Ti.Platform.model.indexOf('Simulator') !== -1 || Ti.Platform.model == "x86_64" || Ti.Platform.model == "google_sdk";
+var inSimulator = Ti.Platform.model.indexOf('Simulator') !== -1 || Ti.Platform.model == "x86_64" || Ti.Platform.model == "instagram_sdk";
 
 var self;
 
@@ -35,7 +35,7 @@ var self;
  * Sets @clientId, @clientSecret, @redirectUri and @devKey
  * 
  */
-function GoogleService(args) {
+function InstagramService(args) {
 	self = this;
 	
 	clientId = args.clientId;
@@ -43,25 +43,25 @@ function GoogleService(args) {
 	redirectUri = args.redirectUri;
 	devKey = args.devKey;
 	
-	Ti.API.debug("GoogleService object initialized");
+	Ti.API.debug("InstagramService object initialized");
 };
 
 
 /*
- * Getter got Google ACCESS_TOKEN
+ * Getter got Instagram ACCESS_TOKEN
  */
-GoogleService.prototype.accessToken = function() {
+InstagramService.prototype.accessToken = function() {
 	return Ti.App.Properties.getString("GG_ACCESS_TOKEN");
 };
 
 
 
 /*
- * Google ACCESS_TOKEN in invalidated after a predefined period
+ * Instagram ACCESS_TOKEN in invalidated after a predefined period
  * REFRESH_TOKEN is used to callout to API for new ACCESS_TOKEN
  * 
  */
-GoogleService.prototype.refreshToken = function(callback) {	
+InstagramService.prototype.refreshToken = function(callback) {	
 	if (REFRESH_TOKEN){
 		var args = {
 			call: 'token',
@@ -103,12 +103,12 @@ GoogleService.prototype.refreshToken = function(callback) {
 /*
  * OAuth2 Login
  * 
- * Displays Google login page
+ * Displays Instagram login page
  */
-GoogleService.prototype.login = function(authSuccess_callback) {
+InstagramService.prototype.login = function(authSuccess_callback) {
 	ACCESS_TOKEN = Ti.App.Properties.getString("GG_ACCESS_TOKEN");
 	REFRESH_TOKEN = Ti.App.Properties.getString("GG_REFRESH_TOKEN");
-	Ti.API.info("GoogleService login " + ACCESS_TOKEN);
+	Ti.API.info("InstagramService login " + ACCESS_TOKEN);
 	
 	// if the property is save then user is logged in already... move on
 	if (ACCESS_TOKEN !== null) {
@@ -119,10 +119,12 @@ GoogleService.prototype.login = function(authSuccess_callback) {
 	} 
 	else {
 		if(authSuccess_callback !== undefined) {
+			Ti.API.info("auth call back detected");
 			success_callback = authSuccess_callback;
 		}
-		var url = String.format(OAUTH_URL+'auth?client_id=%s&redirect_uri=%s&scope=%s&response_type=%s&access_type=%s', clientId, redirectUri, scope, responseType, accessType);
-		showAuthorizeUI(url);
+		var url = String.format(OAUTH_URL+'?client_id=%s&redirect_uri=%s&scope=%s&response_type=%s', clientId, redirectUri, scope, responseType);
+		Ti.API.info("about to show authorizedUI");
+		showAuthorizeUI(url);  //Load 
 	}
 	return;
 };
@@ -130,7 +132,7 @@ GoogleService.prototype.login = function(authSuccess_callback) {
 /** ------------------------------------------------------------------------------
  *
  * ------------------------------------------------------------------------------ */
-GoogleService.prototype.callMethod = function(args, callback, getToken) {
+InstagramService.prototype.callMethod = function(args, callback, getToken) {
 
 	var params = args.params;
 	var method = args.method;
@@ -163,8 +165,8 @@ GoogleService.prototype.callMethod = function(args, callback, getToken) {
 		}
 
 		xhr.onerror = function(e) {
-			Ti.API.error("GoogleService ERROR " + e.error);
-			Ti.API.error("GoogleService ERROR " + e);
+			Ti.API.error("InstagramService ERROR " + e.error);
+			Ti.API.error("InstagramService ERROR " + e);
 			if(callback) {
 				callback({
 					error : e,
@@ -206,7 +208,7 @@ function showAuthorizeUI(pUrl) {
 	
 	window = Ti.UI.createWindow({
 		modal : true,
-		fullscreen : false,
+		fullscreen : true,
 		width : '100%'
 	});
 	closeLabel = Ti.UI.createLabel({
@@ -233,7 +235,7 @@ function showAuthorizeUI(pUrl) {
 			webView.stopLoading();
 			authorizeUICallback(e);
 		}
-		else if (e.url.indexOf('https://accounts.google.com/Logout') !== -1) {
+		else if (e.url.indexOf('https://accounts.instagram.com/Logout') !== -1) {
 			authorizeUICallback(e);
 		}
 	});
@@ -311,10 +313,10 @@ function getTokens(tempToken, callback){
 
 /** ------------------------------------------------------------------------------
  * fires event when login fails
- * app:google_access_denied
+ * app:instagram_access_denied
  *
  * fires event when login successful
- * app:google_token
+ * app:instagram_token
  *
  * executes callback if specified when creating object
  * ------------------------------------------------------------------------------ */
@@ -337,8 +339,8 @@ function authorizeUICallback(e) {
 		var token = title.split("=")[1];
 		tokenReturned = true;
 		Ti.API.info('Temp Token: ' + token);
-	} else if (e.url.indexOf('https://accounts.google.com/Logout') === 0) {
-		Ti.App.fireEvent('app:google_logout', {});
+	} else if (e.url.indexOf('https://accounts.instagram.com/Logout') === 0) {
+		Ti.App.fireEvent('app:instagram_logout', {});
 		destroyAuthorizeUI();
 		Ti.App.Properties.setString("GG_ACCESS_TOKEN", null);
 		Ti.App.Properties.setString("GG_REFRESH_TOKEN", null);
@@ -347,7 +349,7 @@ function authorizeUICallback(e) {
 	
 	if (tokenReturned){
 		if (token === "access_denied"){
-			Ti.App.fireEvent('app:google_access_denied', {});
+			Ti.App.fireEvent('app:instagram_access_denied', {});
 			status = false;
 			Ti.App.Properties.setString("GG_ACCESS_TOKEN", null);
 			Ti.App.Properties.setString("GG_REFRESH_TOKEN", null);
@@ -366,7 +368,7 @@ function authorizeUICallback(e) {
 				status = true;
 				Ti.App.Properties.setString("GG_ACCESS_TOKEN", ACCESS_TOKEN);
 				Ti.App.Properties.setString("GG_REFRESH_TOKEN", REFRESH_TOKEN);
-				Ti.App.fireEvent('app:google_token', {
+				Ti.App.fireEvent('app:instagram_token', {
 					access_token: ACCESS_TOKEN,
 					refresh_token: REFRESH_TOKEN
 				});
@@ -380,4 +382,4 @@ function authorizeUICallback(e) {
 	}
 };
 
-exports.GoogleService = GoogleService;
+exports.InstagramService = InstagramService;
