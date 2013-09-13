@@ -359,7 +359,7 @@ function authorizeUICallback(e) {
 				success_callback(status);
 			}
 		}else {
-			
+			Ti.API.info('/////Instagram.js Line 362 - About to getTokens');
 			getTokens(token, function(e){
 				var res = JSON.parse(e);
 				Ti.API.debug(res);
