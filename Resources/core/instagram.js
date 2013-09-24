@@ -206,10 +206,13 @@ InstagramService.prototype.callMethod = function(args, callback, getToken) {
 
 function showAuthorizeUI(pUrl) {
 	
+	Ti.API.info("About to load" + pUrl);
+	
 	window = Ti.UI.createWindow({
 		modal : true,
-		fullscreen : true,
-		width : '100%'
+		width : '100%',
+		height: '100%',
+		title: "Login"
 	});
 	closeLabel = Ti.UI.createLabel({
 		textAlign : 'right',

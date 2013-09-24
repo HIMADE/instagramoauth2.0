@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ti:app xmlns:ti="http://ti.appcelerator.org">
+<?xml version="1.0" encoding="UTF-8"?><ti:app xmlns:ti="http://ti.appcelerator.org">
     <id>org.himade.instagramoauth2</id>
-    <name>instagramoauth2.0</name>
+    <name>instagramoauth</name>
     <version>1.0</version>
     <publisher>Administrator</publisher>
     <url>http://www.himade.org</url>
@@ -47,4 +46,4 @@
         <target device="tizen">false</target>
     </deployment-targets>
     <sdk-version>3.1.2.GA</sdk-version>
-</ti:app>
+<property name="ti.deploytype">test</property></ti:app>
